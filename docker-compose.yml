@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  # Back-end service
+  backend:
+    build:
+      context: ./task_back_end # Build from the task_back_end directory
+      dockerfile: Dockerfile # Path to your back-end Dockerfile
+    container_name: backend # Name of the container for the back-end
+    environment:
+      - DB_HOST=db # The name of the DB service in the compose file
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=ilvreauinechipamea
+      - DB_NAME=task-db
+    ports:
+      - "5000:5000" # Expose back-end on port 5000
+    depends_on:
+      - db # Ensure DB starts before the back-end
+    networks:
+      - app-network # Connect to the custom network
+
+  # PostgreSQL DB service
+  db:
+    image: postgres:13 # Use the official PostgreSQL image
+    container_name: db # Name of the PostgreSQL container
+    environment:
+      POSTGRES_USER: admin # PostgreSQL user
+      POSTGRES_PASSWORD: ilvreauinechipamea # PostgreSQL password
+      POSTGRES_DB: task-db # Database name to be created
+    volumes:
+      # Map the "data" folder for persisted PostgreSQL data
+      - ./task_db/data:/var/lib/postgresql/data # Persistent volume for DB data
+      # Map the dump file for initializing the DB on first start
+      - ./task_db/task_db_backup.dump:/docker-entrypoint-initdb.d/dump.sql # Path to your SQL dump file
+    ports:
+      - "5432:5432" # Expose PostgreSQL port
+    networks:
+      - app-network # Connect to the custom network
+
+  # Front-end service
+  frontend:
+    build:
+      context: ./task_front_end/task-front-end # Build from the task-front-end directory
+      dockerfile: Dockerfile # Path to your front-end Dockerfile
+    container_name: frontend # Name of the front-end container
+    ports:
+      - "80:80" # Expose front-end on port 80
+    depends_on:
+      - backend # Ensure the back-end is up before the front-end starts
+    networks:
+      - app-network # Connect to the custom network
+
+# Define a custom network for all services to communicate
+networks:
+  app-network:
+    driver: bridge # Use the default bridge network driver

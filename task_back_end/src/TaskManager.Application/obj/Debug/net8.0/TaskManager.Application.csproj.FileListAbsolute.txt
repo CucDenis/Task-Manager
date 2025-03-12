@@ -1,0 +1,15 @@
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\bin\Debug\net8.0\TaskManager.Application.deps.json
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\bin\Debug\net8.0\TaskManager.Application.dll
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\bin\Debug\net8.0\TaskManager.Application.pdb
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\bin\Debug\net8.0\TaskManager.Domain.dll
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\bin\Debug\net8.0\TaskManager.Domain.pdb
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\TaskManager.Application.csproj.AssemblyReference.cache
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\TaskManager.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\TaskManager.Application.AssemblyInfoInputs.cache
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\TaskManager.Application.AssemblyInfo.cs
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\TaskManager.Application.csproj.CoreCompileInputs.cache
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\TaskMana.898BD9DB.Up2Date
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\TaskManager.Application.dll
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\refint\TaskManager.Application.dll
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\TaskManager.Application.pdb
+C:\Work\personal\Programming\task_back_end\src\TaskManager.Application\obj\Debug\net8.0\ref\TaskManager.Application.dll

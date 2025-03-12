@@ -1,0 +1,5 @@
+C:\Work\personal\Programming\task_back_end\obj\Debug\net8.0\TaskManager.csproj.AssemblyReference.cache
+C:\Work\personal\Programming\task_back_end\obj\Debug\net8.0\TaskManager.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\personal\Programming\task_back_end\obj\Debug\net8.0\TaskManager.AssemblyInfoInputs.cache
+C:\Work\personal\Programming\task_back_end\obj\Debug\net8.0\TaskManager.AssemblyInfo.cs
+C:\Work\personal\Programming\task_back_end\obj\Debug\net8.0\TaskManager.csproj.CoreCompileInputs.cache

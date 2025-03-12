@@ -1,0 +1,15 @@
+.max-height-200 {
+  max-height: 200px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-bg-light:hover {
+  background-color: #f8f9fa;
+}
+
+.z-3 {
+  z-index: 3;
+}
