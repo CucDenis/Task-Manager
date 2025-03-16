@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost")
+            policy.WithOrigins("http://localhost:5173")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -67,7 +67,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Add FluentValidation
-builder.Services.AddValidatorsFromAssemblyContaining<TechnicianValidator>();
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
 
 // Add MediatR
 builder.Services.AddMediatR(configuration => 

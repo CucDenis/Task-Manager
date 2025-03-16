@@ -26,6 +26,8 @@ public class InterventionsController : ControllerBase
         if (query.PageSize < 1) query.PageSize = 10;
         
         var result = await _mediator.Send(query);
+
         return Ok(result);
+        
     }
 }

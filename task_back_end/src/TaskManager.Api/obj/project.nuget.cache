@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vt2Qn+ePGo0=",
+  "dgSpecHash": "+FZxPMJCGmY=",
   "success": true,
-  "projectFilePath": "C:\\Work\\personal\\Programming\\task_back_end\\src\\TaskManager.Api\\TaskManager.Api.csproj",
+  "projectFilePath": "C:\\Work\\Task-Manager\\task_back_end\\src\\TaskManager.Api\\TaskManager.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cuc_d\\.nuget\\packages\\dapper\\2.1.28\\dapper.2.1.28.nupkg.sha512",
     "C:\\Users\\cuc_d\\.nuget\\packages\\fluentvalidation\\11.9.0\\fluentvalidation.11.9.0.nupkg.sha512",

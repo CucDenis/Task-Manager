@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.Services;
 using TaskManager.Api.DTOs.Auth;
@@ -36,6 +35,7 @@ public class AuthController : ControllerBase
             if (user == null || token == null)
             {
                 return Unauthorized(new { message = "Invalid credentials" });
+
             }
 
             // Set HttpOnly cookie
@@ -45,17 +45,20 @@ public class AuthController : ControllerBase
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddDays(7)
+
             });
 
             return Ok(new AuthResponseDto
             {
                 Email = user.Email ?? string.Empty,
                 FullName = $"{user.FirstName} {user.LastName}",
+
             });
         }
         catch (Exception ex)
         {
             return StatusCode(500, new { message = ex.Message });
+
         }
     }
 
@@ -67,9 +70,11 @@ public class AuthController : ControllerBase
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Strict
+
         });
         
         return Ok(new { message = "Logged out successfully" });
+
     }
 
     [HttpGet("check-auth")]
@@ -83,7 +88,9 @@ public class AuthController : ControllerBase
                 return Ok(new AuthStatusResponse 
                 { 
                     IsAuthenticated = false 
+
                 });
+
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -101,6 +108,7 @@ public class AuthController : ControllerBase
                     ValidAudience = _configuration["Jwt:Audience"],
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
+
                 }, out SecurityToken validatedToken);
 
                 var email = principal.FindFirst(ClaimTypes.Email)?.Value;
@@ -109,7 +117,9 @@ public class AuthController : ControllerBase
                 return Ok(new AuthStatusResponse 
                 { 
                     IsAuthenticated = true,
+
                 });
+
             }
             catch
             {
@@ -118,12 +128,15 @@ public class AuthController : ControllerBase
                 return Ok(new AuthStatusResponse 
                 { 
                     IsAuthenticated = false 
+
                 });
+
             }
         }
         catch (Exception ex)
         {
             return StatusCode(500, new { message = ex.Message });
+            
         }
     }
 }
