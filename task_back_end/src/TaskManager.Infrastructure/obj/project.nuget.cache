@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Cn7IfPY0QcY=",
+  "dgSpecHash": "2lyDOFxxO1k=",
   "success": true,
-  "projectFilePath": "C:\\Work\\personal\\Programming\\task_back_end\\src\\TaskManager.Infrastructure\\TaskManager.Infrastructure.csproj",
+  "projectFilePath": "C:\\Work\\Task-Manager\\task_back_end\\src\\TaskManager.Infrastructure\\TaskManager.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cuc_d\\.nuget\\packages\\dapper\\2.1.28\\dapper.2.1.28.nupkg.sha512",
     "C:\\Users\\cuc_d\\.nuget\\packages\\microsoft.entityframeworkcore\\8.0.2\\microsoft.entityframeworkcore.8.0.2.nupkg.sha512",

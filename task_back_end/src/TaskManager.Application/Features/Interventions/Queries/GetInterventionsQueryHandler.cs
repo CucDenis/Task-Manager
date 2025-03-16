@@ -48,7 +48,7 @@ public class GetInterventionsQueryHandler : IRequestHandler<GetInterventionsQuer
             try
             {
                 var dateString = request.InterventionDate.Trim('"');
-                var parsedDate = DateTime.Parse(dateString).ToUniversalTime();
+                var parsedDate = DateTime.Parse(dateString);
                 var startOfDay = DateTime.SpecifyKind(parsedDate.Date, DateTimeKind.Utc);
                 
                 query = query.Where(i => i.InterventionDate.Date == startOfDay.Date);
