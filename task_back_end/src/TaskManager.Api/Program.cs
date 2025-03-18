@@ -1,14 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Interfaces;
-using TaskManager.Domain.Models;
 using TaskManager.Infrastructure.Data;
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using TaskManager.Application.Services;
-using TaskManager.Application.Validators;
-using TaskManager.Application.Features.Interventions.Queries;
+using TaskManager.Application.Features.Interventions.Queries.GetInterventions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +32,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Replace the existing authentication configuration with this:
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

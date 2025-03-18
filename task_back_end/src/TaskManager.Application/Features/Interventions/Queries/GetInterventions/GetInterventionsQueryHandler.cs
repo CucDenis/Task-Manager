@@ -4,16 +4,11 @@ using TaskManager.Application.Common.Models;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Domain.Models;
 
-namespace TaskManager.Application.Features.Interventions.Queries;
+namespace TaskManager.Application.Features.Interventions.Queries.GetInterventions;
 
-public class GetInterventionsQueryHandler : IRequestHandler<GetInterventionsQuery, PagedResponse<InterventionDto>>
+public class GetInterventionsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetInterventionsQuery, PagedResponse<InterventionDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public GetInterventionsQueryHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task<PagedResponse<InterventionDto>> Handle(
         GetInterventionsQuery request, CancellationToken cancellationToken)

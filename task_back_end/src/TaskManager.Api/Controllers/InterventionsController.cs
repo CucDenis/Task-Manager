@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.Common.Models;
-using TaskManager.Application.Features.Interventions.Queries;
+using TaskManager.Application.Features.Interventions.Queries.GetInterventions;
 
 namespace TaskManager.Api.Controllers;
 
@@ -29,5 +29,13 @@ public class InterventionsController : ControllerBase
 
         return Ok(result);
         
+    }
+
+    [HttpPost("/create")]
+    public async Task<ActionResult<InterventionDto>> Create([FromBody] CreateInterventionCommand command){
+        
+        var result = await _mediator.Send(command);
+
+        return Ok(result);
     }
 }
