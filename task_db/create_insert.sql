@@ -1,134 +1,256 @@
 -- Create Tables
-CREATE TABLE client (
+
+CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    CUI_CNP VARCHAR(255),
-    email VARCHAR(255),
-    password VARCHAR(255)
+    name VARCHAR(255)
 );
 
-CREATE TABLE offer (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    description TEXT,
-    validity_period DATE,
-    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    client_company VARCHAR(255)
-);
-
-CREATE TABLE offer_device (
-    id SERIAL PRIMARY KEY,
-    offer_id INT REFERENCES offer(id) ON DELETE CASCADE,
-    name VARCHAR(255),
-    quantity INT,
-    price DECIMAL(10,2),
-    category VARCHAR(255),
-    sub_category VARCHAR(255),
-    system_type VARCHAR(255)
-);
-
-CREATE TABLE offer_maintenance_system (
-    id SERIAL PRIMARY KEY,
-    offer_id INT REFERENCES offer(id) ON DELETE CASCADE,
-    name VARCHAR(255),
-    quantity INT,
-    price DECIMAL(10,2)
-);
-
-CREATE TABLE contract (
-    id SERIAL PRIMARY KEY,
-    offer_id INT REFERENCES offer(id) ON DELETE CASCADE,
-    start_date DATE,
-    end_date DATE,
-    free_interventions BOOLEAN,
-    signatures TEXT
-);
-
-CREATE TABLE technician (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     email VARCHAR(255),
-    password VARCHAR(255),
-    phone_number VARCHAR(255),
-    signature TEXT,
-    status VARCHAR(255)
+    role_id INT REFERENCES roles(id),
+    refresh_token TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE intervention_document (
+CREATE TABLE companies (
     id SERIAL PRIMARY KEY,
-    client_id INT REFERENCES client(id) ON DELETE CASCADE,
-    technician_id INT REFERENCES technician(id) ON DELETE SET NULL,
-    work_point_address TEXT,
-    contact_person VARCHAR(255),
-    intervention_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(255),
-    time_interval TEXT
-);
-
-CREATE TABLE invoice (
-    id SERIAL PRIMARY KEY,
-    issuing_company VARCHAR(255),
-    client_company VARCHAR(255),
-    subtotal DECIMAL(10,2),
-    total DECIMAL(10,2),
-    issue_date DATE,
-    payment_due DATE
-);
-
-CREATE TABLE invoice_item (
-    id SERIAL PRIMARY KEY,
-    invoice_id INT REFERENCES invoice(id) ON DELETE CASCADE,
     name VARCHAR(255),
-    quantity INT,
-    unit_price DECIMAL(10,2),
-    total_price DECIMAL(10,2),
-    vat DECIMAL(10,2)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE client_contact (
+CREATE TABLE system_types (
     id SERIAL PRIMARY KEY,
-    client_id INT REFERENCES client(id) ON DELETE CASCADE,
-    contact_name VARCHAR(255)
+    name VARCHAR(255)
 );
 
--- Bulk Insert Script for Dummy Data
-INSERT INTO offer (name, description, validity_period, client_company) 
-SELECT 'Offer ' || i, 'Description ' || i, CURRENT_DATE + (i % 30), 'Company ' || i
-FROM generate_series(1, 100000) i;
+CREATE TABLE sub_system_types (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    system_type_id INT REFERENCES system_types(id)
+);
 
-INSERT INTO offer_device (offer_id, name, quantity, price, category, sub_category, system_type)
-SELECT i, 'Device ' || i, (random() * 10)::INT + 1, (random() * 1000)::DECIMAL, 'Category ' || (i % 5), 'Subcategory ' || (i % 3), 'System ' || (i % 4)
-FROM generate_series(1, 100000) i;
+CREATE TABLE availability (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255)
+);
 
-INSERT INTO offer_maintenance_system (offer_id, name, quantity, price)
-SELECT i, 'Maintenance System ' || i, (random() * 5)::INT + 1, (random() * 500)::DECIMAL
-FROM generate_series(1, 100000) i;
+CREATE TABLE technicians (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    company_id INT REFERENCES companies(id),
+    phone VARCHAR(255),
+    availability_id INT REFERENCES availability(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-INSERT INTO contract (offer_id, start_date, end_date, free_interventions, signatures)
-SELECT id, CURRENT_DATE, CURRENT_DATE + 365, random() > 0.5, 'Signature ' || id
-FROM offer;
+CREATE TABLE sub_system_type_expertise (
+    id SERIAL PRIMARY KEY,
+    technician_id INT REFERENCES technicians(id),
+    sub_system_type_id INT REFERENCES sub_system_types(id)
+);
 
-INSERT INTO client (name, CUI_CNP, email, password)
-SELECT 'Client ' || i, 'CUI' || i, 'client' || i || '@email.com', 'password' || i
-FROM generate_series(1, 100000) i;
+CREATE TABLE contracts (
+    id SERIAL PRIMARY KEY,
+    client_company_id INT REFERENCES companies(id),
+    technician_company_id INT REFERENCES companies(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-INSERT INTO technician (first_name, last_name, email, password, phone_number, signature, status)
-SELECT 'TechFirst' || i, 'TechLast' || i, 'tech' || i || '@email.com', 'password' || i, '0700000' || i, 'Signature ' || i, 'Available'
-FROM generate_series(1, 100000) i;
+CREATE TABLE clients (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    company_id INT REFERENCES companies(id),
+    phone VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-INSERT INTO intervention_document (client_id, technician_id, work_point_address, contact_person, intervention_date, status, time_interval)
-SELECT (random() * 100000)::INT + 1, (random() * 100000)::INT + 1, 'Address ' || i, 'Contact ' || i, CURRENT_TIMESTAMP, 'New Request', '09:00-10:00'
-FROM generate_series(1, 100000) i;
+CREATE TABLE urgency_levels (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255)
+);
 
-INSERT INTO invoice (issuing_company, client_company, subtotal, total, issue_date, payment_due)
-SELECT 'Issuer ' || i, 'Client ' || i, (random() * 10000)::DECIMAL, (random() * 12000)::DECIMAL, CURRENT_DATE, CURRENT_DATE + 30
-FROM generate_series(1, 100000) i;
+CREATE TABLE interventions (
+    id SERIAL PRIMARY KEY,
+    client_id INT REFERENCES clients(id),
+    technician_id INT REFERENCES technicians(id),
+    name VARCHAR(255),
+    level_id INT REFERENCES urgency_levels(id),
+    description TEXT,
+    location TEXT,
+    client_signature BYTEA,
+    technician_signature BYTEA,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-INSERT INTO invoice_item (invoice_id, name, quantity, unit_price, total_price, vat)
-SELECT i, 'Product ' || i, (random() * 10)::INT + 1, (random() * 500)::DECIMAL, (random() * 5000)::DECIMAL, (random() * 100)::DECIMAL
-FROM generate_series(1, 100000) i;
+CREATE TABLE invoices (
+    id SERIAL PRIMARY KEY,
+    contract_id INT REFERENCES contracts(id),
+    intervention_id INT REFERENCES interventions(id),
+    description TEXT,
+    emmiting_date TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-INSERT INTO client_contact (client_id, contact_name)
-SELECT i, 'Contact Person ' || i
-FROM generate_series(1, 100000) i;
+-- Bulk Insert Data
+INSERT INTO roles (name) VALUES ('Client'), ('Technician'), ('Admin');
+
+INSERT INTO system_types (name) VALUES ('HVAC'), ('Electrical'), ('Plumbing');
+
+INSERT INTO sub_system_types (name, system_type_id)
+SELECT 'Type ' || i, id
+FROM generate_series(1, 10) i
+CROSS JOIN LATERAL (SELECT id FROM system_types ORDER BY random() LIMIT 1) s;
+
+INSERT INTO availability (name) VALUES ('Available'), ('Busy'), ('On Leave');
+
+INSERT INTO urgency_levels (name) VALUES ('Low'), ('Medium'), ('High'), ('Critical');
+
+INSERT INTO companies (name)
+SELECT 'Company ' || i FROM generate_series(1, 50) i;
+
+-- Populate Users Table with proper role_id references
+INSERT INTO users (first_name, last_name, email, role_id, refresh_token)
+SELECT 
+    'User' || i,
+    'Last' || i,
+    'user' || i || '@example.com',
+    role.id,  -- Use the role id from the roles table
+    NULL
+FROM 
+    generate_series(1, 200) i
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM roles
+    ORDER BY random()  -- Randomly pick a role from the roles table
+    LIMIT 1
+) role;
+
+-- Populate Clients Table with proper user_id and company_id references
+INSERT INTO clients (user_id, company_id, phone, created_at)
+SELECT 
+    client_user.id,                  -- Reference user_id from the users table where the role is 'Client'
+    company.id,                       -- Reference company_id from the companies table
+    '0700000' || client_user.id,      -- Generate phone number based on user_id
+    CURRENT_TIMESTAMP                 -- Use the current timestamp for created_at
+FROM 
+    (SELECT id
+     FROM users 
+     WHERE role_id = 1  -- Only select users with role_id = 1 (Clients)
+     ORDER BY random() 
+     LIMIT 100) AS client_user   -- Select 100 random clients from the users table
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM companies
+    ORDER BY random()  -- Randomly pick a company for the client
+    LIMIT 1
+) AS company;
+
+-- Populate Technicians Table with proper user_id, company_id, and availability_id references
+INSERT INTO technicians (user_id, company_id, phone, availability_id, created_at)
+SELECT 
+    user_data.id,                    -- Reference user_id from the users subquery
+    company.id,                       -- Reference company_id from the companies table
+    '0700000' || user_data.id,        -- Generate phone number based on user_id
+    availability.id,                  -- Reference availability_id from the availability table
+    CURRENT_TIMESTAMP                 -- Use the current timestamp for created_at
+FROM 
+    (SELECT id
+     FROM users 
+     WHERE role_id = 2 
+     ORDER BY random() 
+     LIMIT 200) AS user_data  -- Alias the subquery as user_data
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM companies
+    ORDER BY random()  -- Randomly pick a company from the companies table
+    LIMIT 1
+) AS company
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM availability
+    ORDER BY random()  -- Randomly pick an availability from the availability table
+    LIMIT 1
+) AS availability;
+
+INSERT INTO sub_system_type_expertise (technician_id, sub_system_type_id)
+SELECT tech.id, sub.id
+FROM (SELECT id FROM technicians ORDER BY random() LIMIT 500) tech,
+     (SELECT id FROM sub_system_types ORDER BY random() LIMIT 500) sub;
+
+-- Populate Contracts Table with valid company references
+INSERT INTO contracts (client_company_id, technician_company_id, created_at)
+SELECT 
+    client_company.id,              -- Reference client_company_id from the companies table
+    technician_company.id,          -- Reference technician_company_id from the companies table
+    CURRENT_TIMESTAMP               -- Use the current timestamp for created_at
+FROM 
+    (SELECT id
+     FROM companies
+     ORDER BY random() 
+     LIMIT 100) AS client_company  -- Select 100 random companies for the client company
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM companies
+    ORDER BY random()  -- Randomly pick a different company for the technician company
+    LIMIT 1
+) AS technician_company;
+
+-- Populate Interventions Table with valid client_id, technician_id, level_id, and other references
+INSERT INTO interventions (client_id, technician_id, name, level_id, description, location, client_signature, technician_signature, created_at)
+SELECT 
+    client.id,                      -- Reference client_id from the clients table
+    technician.id,                  -- Reference technician_id from the technicians table
+    'Intervention ' || i,           -- Generate unique intervention name
+    urgency_level.id,               -- Reference level_id from the urgency_levels table
+    'Description for intervention ' || i, -- Generate description for the intervention
+    'Location ' || i,               -- Generate location for the intervention
+    NULL,                           -- client_signature (NULL as placeholder)
+    NULL,                           -- technician_signature (NULL as placeholder)
+    CURRENT_TIMESTAMP               -- Use the current timestamp for created_at
+FROM 
+    generate_series(1, 100000) i
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM clients
+    ORDER BY random()  -- Randomly pick a client from the clients table
+    LIMIT 1
+) AS client
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM technicians
+    ORDER BY random()  -- Randomly pick a technician from the technicians table
+    LIMIT 1
+) AS technician
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM urgency_levels
+    ORDER BY random()  -- Randomly pick an urgency level from the urgency_levels table
+    LIMIT 1
+) AS urgency_level;
+
+-- Populate Invoices Table with valid contract_id, intervention_id, and other references
+INSERT INTO invoices (contract_id, intervention_id, description, emmiting_date, created_at)
+SELECT 
+    contract.id,                     -- Reference contract_id from the contracts table
+    intervention.id,                 -- Reference intervention_id from the interventions table
+    'Invoice for intervention ' || i, -- Generate unique invoice description
+    CURRENT_TIMESTAMP,               -- Use the current timestamp for emmiting_date
+    CURRENT_TIMESTAMP                -- Use the current timestamp for created_at
+FROM 
+    generate_series(1, 50000) i
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM contracts
+    ORDER BY random()  -- Randomly pick a contract from the contracts table
+    LIMIT 1
+) AS contract
+CROSS JOIN LATERAL (
+    SELECT id
+    FROM interventions
+    ORDER BY random()  -- Randomly pick an intervention from the interventions table
+    LIMIT 1
+) AS intervention;
+
