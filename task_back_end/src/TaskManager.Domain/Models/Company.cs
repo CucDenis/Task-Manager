@@ -9,6 +9,8 @@ public partial class Company
 
     public DateTime? CreatedAt { get; set; }
 
+    public string? Cui { get; set; }
+
     public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
 
     public virtual ICollection<Contract> ContractClientCompanies { get; set; } = new List<Contract>();

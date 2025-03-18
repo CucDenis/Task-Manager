@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Models;
 
-namespace TaskManager.Infrastructure.Data;
+namespace TaskManager.Infrastructure.Models;
 
 public partial class AppDbContext : DbContext
 {
@@ -82,11 +82,16 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("companies");
 
+            entity.HasIndex(e => e.Cui, "companies_cui_key").IsUnique();
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
+            entity.Property(e => e.Cui)
+                .HasMaxLength(20)
+                .HasColumnName("cui");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
@@ -286,7 +291,12 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("users");
 
+            entity.HasIndex(e => e.Cnp, "users_cnp_key").IsUnique();
+
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Cnp)
+                .HasMaxLength(20)
+                .HasColumnName("cnp");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
@@ -300,6 +310,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.LastName)
                 .HasMaxLength(255)
                 .HasColumnName("last_name");
+            entity.Property(e => e.Password).HasColumnName("password");
             entity.Property(e => e.RefreshToken).HasColumnName("refresh_token");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
 

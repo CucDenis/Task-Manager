@@ -136,7 +136,6 @@ C:\Work\Task-Manager\task_back_end\src\TaskManager.Api\bin\Debug\net8.0\TaskMana
 C:\Work\Task-Manager\task_back_end\src\TaskManager.Api\bin\Debug\net8.0\TaskManager.Api.pdb
 C:\Work\Task-Manager\task_back_end\src\TaskManager.Api\bin\Debug\net8.0\Dapper.dll
 C:\Work\Task-Manager\task_back_end\src\TaskManager.Api\bin\Debug\net8.0\FluentValidation.dll
-C:\Work\Task-Manager\task_back_end\src\TaskManager.Api\bin\Debug\net8.0\FluentValidation.AspNetCore.dll
 C:\Work\Task-Manager\task_back_end\src\TaskManager.Api\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
 C:\Work\Task-Manager\task_back_end\src\TaskManager.Api\bin\Debug\net8.0\Humanizer.dll
 C:\Work\Task-Manager\task_back_end\src\TaskManager.Api\bin\Debug\net8.0\MediatR.dll

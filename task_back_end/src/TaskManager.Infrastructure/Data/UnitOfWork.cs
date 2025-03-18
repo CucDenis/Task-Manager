@@ -1,5 +1,6 @@
 using TaskManager.Domain.Interfaces;
 using TaskManager.Domain.Models;
+using TaskManager.Infrastructure.Models;
 using TaskManager.Infrastructure.Repositories;
 
 namespace TaskManager.Infrastructure.Data;

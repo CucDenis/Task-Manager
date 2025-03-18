@@ -17,6 +17,10 @@ public partial class User
 
     public DateTime? CreatedAt { get; set; }
 
+    public string? Password { get; set; }
+
+    public string? Cnp { get; set; }
+
     public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
 
     public virtual Role? Role { get; set; }

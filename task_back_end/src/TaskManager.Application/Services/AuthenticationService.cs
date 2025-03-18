@@ -14,20 +14,20 @@ public class AuthenticationService
         _jwtService = jwtService;
     }
 
-    public async Task<(IJwtUser? user, string? token)> AuthenticateAsync(string email, string password, string userType)
+    public async Task<(User? user, string? token)> AuthenticateAsync(string email, string password, string userType)
     {
-        IJwtUser? user = null;
+        User? user = null;
         
         switch (userType.ToLower())
         {
             case "client":
-                var clients = await _unitOfWork.Repository<Client>().GetAllAsync();
+                var clients = await _unitOfWork.Repository<User>().GetAllAsync();
                 user = clients.FirstOrDefault(c => 
                     c.Email?.Equals(email, StringComparison.OrdinalIgnoreCase) == true);
                 break;
 
             case "technician":
-                var technicians = await _unitOfWork.Repository<Technician>().GetAllAsync();
+                var technicians = await _unitOfWork.Repository<User>().GetAllAsync();
                 user = technicians.FirstOrDefault(t => 
                     t.Email?.Equals(email, StringComparison.OrdinalIgnoreCase) == true);
                 break;

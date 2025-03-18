@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using TaskManager.Application.Services;
 using TaskManager.Application.Features.Interventions.Queries.GetInterventions;
+using TaskManager.Infrastructure.Models;
+using TaskManager.Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,7 +66,11 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Add FluentValidation
-builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
+// builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()
+//     .Where(assembly => assembly.FullName != null && 
+//         (assembly.FullName.StartsWith("TaskManager.Application") || 
+//          assembly.FullName.StartsWith("TaskManager.Api"))));
 
 // Add MediatR
 builder.Services.AddMediatR(configuration => 
