@@ -1,273 +1,296 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Models;
 
 namespace TaskManager.Infrastructure.Data;
 
 public partial class AppDbContext : DbContext
 {
-    public AppDbContext()
-    {
-    }
-
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
     }
 
+    public virtual DbSet<Availability> Availabilities { get; set; }
+
     public virtual DbSet<Client> Clients { get; set; }
 
-    public virtual DbSet<ClientContact> ClientContacts { get; set; }
+    public virtual DbSet<Company> Companies { get; set; }
 
     public virtual DbSet<Contract> Contracts { get; set; }
 
-    public virtual DbSet<InterventionDocument> InterventionDocuments { get; set; }
+    public virtual DbSet<Intervention> Interventions { get; set; }
 
     public virtual DbSet<Invoice> Invoices { get; set; }
 
-    public virtual DbSet<InvoiceItem> InvoiceItems { get; set; }
+    public virtual DbSet<Role> Roles { get; set; }
 
-    public virtual DbSet<Offer> Offers { get; set; }
+    public virtual DbSet<SubSystemType> SubSystemTypes { get; set; }
 
-    public virtual DbSet<OfferDevice> OfferDevices { get; set; }
+    public virtual DbSet<SubSystemTypeExpertise> SubSystemTypeExpertises { get; set; }
 
-    public virtual DbSet<OfferMaintenanceSystem> OfferMaintenanceSystems { get; set; }
+    public virtual DbSet<SystemType> SystemTypes { get; set; }
 
     public virtual DbSet<Technician> Technicians { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        // Done in Startup.cs
-        
-        // Add UTC DateTime conversion
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-    }
+    public virtual DbSet<UrgencyLevel> UrgencyLevels { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Client>(entity =>
+        modelBuilder.Entity<Availability>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("client_pkey");
+            entity.HasKey(e => e.Id).HasName("availability_pkey");
 
-            entity.ToTable("client");
+            entity.ToTable("availability");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CuiCnp)
-                .HasMaxLength(255)
-                .HasColumnName("cui_cnp");
-            entity.Property(e => e.Email)
-                .HasMaxLength(255)
-                .HasColumnName("email");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
-            entity.Property(e => e.Password)
-                .HasMaxLength(255)
-                .HasColumnName("password");
         });
 
-        modelBuilder.Entity<ClientContact>(entity =>
+        modelBuilder.Entity<Client>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("client_contact_pkey");
+            entity.HasKey(e => e.Id).HasName("clients_pkey");
 
-            entity.ToTable("client_contact");
+            entity.ToTable("clients");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ClientId).HasColumnName("client_id");
-            entity.Property(e => e.ContactName)
+            entity.Property(e => e.CompanyId).HasColumnName("company_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Phone)
                 .HasMaxLength(255)
-                .HasColumnName("contact_name");
+                .HasColumnName("phone");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            entity.HasOne(d => d.Client).WithMany(p => p.ClientContacts)
-                .HasForeignKey(d => d.ClientId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("client_contact_client_id_fkey");
+            entity.HasOne(d => d.Company).WithMany(p => p.Clients)
+                .HasForeignKey(d => d.CompanyId)
+                .HasConstraintName("clients_company_id_fkey");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Clients)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("clients_user_id_fkey");
+        });
+
+        modelBuilder.Entity<Company>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("companies_pkey");
+
+            entity.ToTable("companies");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<Contract>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("contract_pkey");
+            entity.HasKey(e => e.Id).HasName("contracts_pkey");
 
-            entity.ToTable("contract");
+            entity.ToTable("contracts");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.EndDate).HasColumnName("end_date");
-            entity.Property(e => e.FreeInterventions).HasColumnName("free_interventions");
-            entity.Property(e => e.OfferId).HasColumnName("offer_id");
-            entity.Property(e => e.Signatures).HasColumnName("signatures");
-            entity.Property(e => e.StartDate).HasColumnName("start_date");
+            entity.Property(e => e.ClientCompanyId).HasColumnName("client_company_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.TechnicianCompanyId).HasColumnName("technician_company_id");
 
-            entity.HasOne(d => d.Offer).WithMany(p => p.Contracts)
-                .HasForeignKey(d => d.OfferId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("contract_offer_id_fkey");
+            entity.HasOne(d => d.ClientCompany).WithMany(p => p.ContractClientCompanies)
+                .HasForeignKey(d => d.ClientCompanyId)
+                .HasConstraintName("contracts_client_company_id_fkey");
+
+            entity.HasOne(d => d.TechnicianCompany).WithMany(p => p.ContractTechnicianCompanies)
+                .HasForeignKey(d => d.TechnicianCompanyId)
+                .HasConstraintName("contracts_technician_company_id_fkey");
         });
 
-        modelBuilder.Entity<InterventionDocument>(entity =>
+        modelBuilder.Entity<Intervention>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("intervention_document_pkey");
+            entity.HasKey(e => e.Id).HasName("interventions_pkey");
 
-            entity.ToTable("intervention_document");
+            entity.ToTable("interventions");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ContactPerson)
-                .HasMaxLength(255)
-                .HasColumnName("contact_person");
-            entity.Property(e => e.InterventionDate)
-                .HasMaxLength(255)
-                .HasColumnName("intervention_date");
-            entity.Property(e => e.Status)
-                .HasMaxLength(255)
-                .HasColumnName("status");
-            entity.Property(e => e.TimeInterval).HasColumnName("time_interval");
-            entity.Property(e => e.WorkPointAddress).HasColumnName("work_point_address");
-            entity.Property(e => e.TechnicianId).HasColumnName("technician_id");
             entity.Property(e => e.ClientId).HasColumnName("client_id");
-            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.ClientSignature).HasColumnName("client_signature");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.LevelId).HasColumnName("level_id");
+            entity.Property(e => e.Location).HasColumnName("location");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+            entity.Property(e => e.TechnicianId).HasColumnName("technician_id");
+            entity.Property(e => e.TechnicianSignature).HasColumnName("technician_signature");
 
-            entity.HasOne(d => d.Technician)
-                .WithMany()
-                .HasForeignKey(d => d.TechnicianId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            entity.HasOne(d => d.Client)
-                .WithMany()
+            entity.HasOne(d => d.Client).WithMany(p => p.Interventions)
                 .HasForeignKey(d => d.ClientId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasConstraintName("interventions_client_id_fkey");
+
+            entity.HasOne(d => d.Level).WithMany(p => p.Interventions)
+                .HasForeignKey(d => d.LevelId)
+                .HasConstraintName("interventions_level_id_fkey");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.Interventions)
+                .HasForeignKey(d => d.TechnicianId)
+                .HasConstraintName("interventions_technician_id_fkey");
         });
 
         modelBuilder.Entity<Invoice>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("invoice_pkey");
+            entity.HasKey(e => e.Id).HasName("invoices_pkey");
 
-            entity.ToTable("invoice");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ClientCompany)
-                .HasMaxLength(255)
-                .HasColumnName("client_company");
-            entity.Property(e => e.IssueDate).HasColumnName("issue_date");
-            entity.Property(e => e.IssuingCompany)
-                .HasMaxLength(255)
-                .HasColumnName("issuing_company");
-            entity.Property(e => e.PaymentDue).HasColumnName("payment_due");
-            entity.Property(e => e.Subtotal)
-                .HasPrecision(10, 2)
-                .HasColumnName("subtotal");
-            entity.Property(e => e.Total)
-                .HasPrecision(10, 2)
-                .HasColumnName("total");
-        });
-
-        modelBuilder.Entity<InvoiceItem>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("invoice_item_pkey");
-
-            entity.ToTable("invoice_item");
+            entity.ToTable("invoices");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.InvoiceId).HasColumnName("invoice_id");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
-            entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.TotalPrice)
-                .HasPrecision(10, 2)
-                .HasColumnName("total_price");
-            entity.Property(e => e.UnitPrice)
-                .HasPrecision(10, 2)
-                .HasColumnName("unit_price");
-            entity.Property(e => e.Vat)
-                .HasPrecision(10, 2)
-                .HasColumnName("vat");
-
-            entity.HasOne(d => d.Invoice).WithMany(p => p.InvoiceItems)
-                .HasForeignKey(d => d.InvoiceId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("invoice_item_invoice_id_fkey");
-        });
-
-        modelBuilder.Entity<Offer>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("offer_pkey");
-
-            entity.ToTable("offer");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ClientCompany)
-                .HasMaxLength(255)
-                .HasColumnName("client_company");
-            entity.Property(e => e.CreationDate)
+            entity.Property(e => e.ContractId).HasColumnName("contract_id");
+            entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
-                .HasColumnName("creation_date");
+                .HasColumnName("created_at");
             entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
-            entity.Property(e => e.ValidityPeriod).HasColumnName("validity_period");
+            entity.Property(e => e.EmmitingDate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("emmiting_date");
+            entity.Property(e => e.InterventionId).HasColumnName("intervention_id");
+
+            entity.HasOne(d => d.Contract).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.ContractId)
+                .HasConstraintName("invoices_contract_id_fkey");
+
+            entity.HasOne(d => d.Intervention).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.InterventionId)
+                .HasConstraintName("invoices_intervention_id_fkey");
         });
 
-        modelBuilder.Entity<OfferDevice>(entity =>
+        modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("offer_device_pkey");
+            entity.HasKey(e => e.Id).HasName("roles_pkey");
 
-            entity.ToTable("offer_device");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Category)
-                .HasMaxLength(255)
-                .HasColumnName("category");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
-            entity.Property(e => e.OfferId).HasColumnName("offer_id");
-            entity.Property(e => e.Price)
-                .HasPrecision(10, 2)
-                .HasColumnName("price");
-            entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.SubCategory)
-                .HasMaxLength(255)
-                .HasColumnName("sub_category");
-            entity.Property(e => e.SystemType)
-                .HasMaxLength(255)
-                .HasColumnName("system_type");
-
-            entity.HasOne(d => d.Offer).WithMany(p => p.OfferDevices)
-                .HasForeignKey(d => d.OfferId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("offer_device_offer_id_fkey");
-        });
-
-        modelBuilder.Entity<OfferMaintenanceSystem>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("offer_maintenance_system_pkey");
-
-            entity.ToTable("offer_maintenance_system");
+            entity.ToTable("roles");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
-            entity.Property(e => e.OfferId).HasColumnName("offer_id");
-            entity.Property(e => e.Price)
-                .HasPrecision(10, 2)
-                .HasColumnName("price");
-            entity.Property(e => e.Quantity).HasColumnName("quantity");
+        });
 
-            entity.HasOne(d => d.Offer).WithMany(p => p.OfferMaintenanceSystems)
-                .HasForeignKey(d => d.OfferId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("offer_maintenance_system_offer_id_fkey");
+        modelBuilder.Entity<SubSystemType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("sub_system_types_pkey");
+
+            entity.ToTable("sub_system_types");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+            entity.Property(e => e.SystemTypeId).HasColumnName("system_type_id");
+
+            entity.HasOne(d => d.SystemType).WithMany(p => p.SubSystemTypes)
+                .HasForeignKey(d => d.SystemTypeId)
+                .HasConstraintName("sub_system_types_system_type_id_fkey");
+        });
+
+        modelBuilder.Entity<SubSystemTypeExpertise>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("sub_system_type_expertise_pkey");
+
+            entity.ToTable("sub_system_type_expertise");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.SubSystemTypeId).HasColumnName("sub_system_type_id");
+            entity.Property(e => e.TechnicianId).HasColumnName("technician_id");
+
+            entity.HasOne(d => d.SubSystemType).WithMany(p => p.SubSystemTypeExpertises)
+                .HasForeignKey(d => d.SubSystemTypeId)
+                .HasConstraintName("sub_system_type_expertise_sub_system_type_id_fkey");
+
+            entity.HasOne(d => d.Technician).WithMany(p => p.SubSystemTypeExpertises)
+                .HasForeignKey(d => d.TechnicianId)
+                .HasConstraintName("sub_system_type_expertise_technician_id_fkey");
+        });
+
+        modelBuilder.Entity<SystemType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("system_types_pkey");
+
+            entity.ToTable("system_types");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<Technician>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("technician_pkey");
+            entity.HasKey(e => e.Id).HasName("technicians_pkey");
 
-            entity.ToTable("technician");
+            entity.ToTable("technicians");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AvailabilityId).HasColumnName("availability_id");
+            entity.Property(e => e.CompanyId).HasColumnName("company_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(255)
+                .HasColumnName("phone");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.Availability).WithMany(p => p.Technicians)
+                .HasForeignKey(d => d.AvailabilityId)
+                .HasConstraintName("technicians_availability_id_fkey");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.Technicians)
+                .HasForeignKey(d => d.CompanyId)
+                .HasConstraintName("technicians_company_id_fkey");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Technicians)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("technicians_user_id_fkey");
+        });
+
+        modelBuilder.Entity<UrgencyLevel>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("urgency_levels_pkey");
+
+            entity.ToTable("urgency_levels");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("users_pkey");
+
+            entity.ToTable("users");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .HasColumnName("email");
@@ -277,16 +300,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.LastName)
                 .HasMaxLength(255)
                 .HasColumnName("last_name");
-            entity.Property(e => e.Password)
-                .HasMaxLength(255)
-                .HasColumnName("password");
-            entity.Property(e => e.PhoneNumber)
-                .HasMaxLength(255)
-                .HasColumnName("phone_number");
-            entity.Property(e => e.Signature).HasColumnName("signature");
-            entity.Property(e => e.Status)
-                .HasMaxLength(255)
-                .HasColumnName("status");
+            entity.Property(e => e.RefreshToken).HasColumnName("refresh_token");
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("users_role_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

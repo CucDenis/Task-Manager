@@ -1,24 +1,27 @@
-﻿using System.Text.Json.Serialization;
-using TaskManager.Domain.Interfaces;
-
+﻿
 namespace TaskManager.Domain.Models;
 
-public partial class Technician : IJwtUser
+public partial class Technician
 {
     public int Id { get; set; }
 
-    public string? FirstName { get; set; }
+    public int? UserId { get; set; }
 
-    public string? LastName { get; set; }
+    public int? CompanyId { get; set; }
 
-    public string? Email { get; set; }
+    public string? Phone { get; set; }
 
-    [JsonIgnore]
-    public string? Password { get; set; }
+    public int? AvailabilityId { get; set; }
 
-    public string? PhoneNumber { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public string? Signature { get; set; }
+    public virtual Availability? Availability { get; set; }
 
-    public string? Status { get; set; }
+    public virtual Company? Company { get; set; }
+
+    public virtual ICollection<Intervention> Interventions { get; set; } = new List<Intervention>();
+
+    public virtual ICollection<SubSystemTypeExpertise> SubSystemTypeExpertises { get; set; } = new List<SubSystemTypeExpertise>();
+
+    public virtual User? User { get; set; }
 }
