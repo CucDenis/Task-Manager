@@ -7,6 +7,8 @@ obj/
 *.dll.config
 *.cache
 *.suo
+*.CopyComplete
+*.FileListAbsolute.txt
 
 ## Visual Studio
 .vs/
@@ -37,6 +39,7 @@ obj/
 *.vspscc
 *.vssscc
 .builds
+*.vsidx
 
 ## Build results
 [Dd]ebug/
