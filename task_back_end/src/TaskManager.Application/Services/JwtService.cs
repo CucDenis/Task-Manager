@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using TaskManager.Domain.Interfaces;
+using TaskManager.Domain.Models;
 
 namespace TaskManager.Application.Services;
 
@@ -16,7 +16,7 @@ public class JwtService
         _configuration = configuration;
     }
 
-    public string GenerateToken<T>(T user) where T : IJwtUser
+    public string GenerateToken<T>(T user) where T : User
     {
         var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? 
             throw new InvalidOperationException("JWT Key not found"));

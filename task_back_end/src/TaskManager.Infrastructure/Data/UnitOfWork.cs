@@ -25,8 +25,11 @@ public class UnitOfWork : IUnitOfWork
         }
 
         repository = new Repository<T>(_context);
+
         _repositories.Add(typeof(T), repository);
+
         return (IRepository<T>)repository;
+        
     }
 
     public async Task<int> SaveChangesAsync()

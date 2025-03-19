@@ -1,13 +1,42 @@
-## .NET Core build folders
+## .NET Core
 bin/
 obj/
+*.dll
+*.exe
+*.pdb
+*.dll.config
+*.cache
+*.suo
 
-## Visual Studio files
+## Visual Studio
 .vs/
 *.user
 *.userosscache
 *.sln.docstates
-*.userprefs
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
 
 ## Build results
 [Dd]ebug/
@@ -16,14 +45,13 @@ obj/
 [Rr]eleases/
 x64/
 x86/
-build/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
 bld/
 [Bb]in/
 [Oo]bj/
-[Oo]ut/
-msbuild.log
-msbuild.err
-msbuild.wrn
+[Ll]og/
+[Ll]ogs/
 
 ## Visual Studio Code
 .vscode/*
@@ -32,13 +60,20 @@ msbuild.wrn
 !.vscode/launch.json
 !.vscode/extensions.json
 
-## NuGet Packages
+## NuGet
 *.nupkg
+*.snupkg
 **/packages/*
 !**/packages/build/
 *.nuget.props
 *.nuget.targets
 
-## Environment Variables
+## Environment Files
 appsettings.Development.json
 *.env
+*.Development.json
+launchSettings.json
+
+## Rider
+.idea/
+*.sln.iml

@@ -13,75 +13,78 @@ public class GetInterventionsQueryHandler(IUnitOfWork unitOfWork) : IRequestHand
     public async Task<PagedResponse<InterventionDto>> Handle(
         GetInterventionsQuery request, CancellationToken cancellationToken)
     {
-        var query = _unitOfWork.Repository<Intervention>()
+    
+        var queryInterventions = _unitOfWork.Repository<Intervention>()
             .GetQueryable()
-            .Include(i => i.Technician)
             .Include(i => i.Client)
-            .AsQueryable();
-
+                .ThenInclude(c => c!.User)
+            .Include(i => i.Technician)
+                .ThenInclude(t => t!.User)
+            .Include(i => i.Level)
+            .Select(i => new
+            {
+                i.Id,
+                Name = i.Name ?? string.Empty,
+                ClientName = i.Client != null && i.Client.User != null ? i.Client.User.FirstName + " " + i.Client.User.LastName : string.Empty,
+                InterventionDate = i.CreatedAt,
+                TechnicianName = i.Technician != null && i.Technician.User != null ? i.Technician.User.FirstName + " " + i.Technician.User.LastName : string.Empty,
+                UrgencyLevel = i.Level != null ? i.Level.Name : string.Empty
+            });
 
         if (!string.IsNullOrWhiteSpace(request.InterventionName))
         {
-            query = query.Where(i => i.Name != null && i.Name.Contains(request.InterventionName));
+            queryInterventions = queryInterventions.Where(i => i.Name != null && i.Name.Contains(request.InterventionName));
         }
 
-        // if (!string.IsNullOrWhiteSpace(request.TechnicianName))
-        // {
-        //     query = query.Where(i => i.Technician != null && 
-        //         (i.Technician.FirstName + " " + i.Technician.LastName)
-        //         .Contains(request.TechnicianName));
-        // }
+        if (!string.IsNullOrWhiteSpace(request.TechnicianName))
+        {
+            queryInterventions = queryInterventions.Where(i => i.TechnicianName != null && i.TechnicianName.Contains(request.TechnicianName));
+        }
 
-        // if (!string.IsNullOrWhiteSpace(request.ClientName))
-        // {
-        //     query = query.Where(i => i.Client != null && 
-        //         (i.Client.Name ?? string.Empty).Contains(request.ClientName));
-        // }
+        if (!string.IsNullOrWhiteSpace(request.ClientName))
+        {
+            queryInterventions = queryInterventions.Where(i => i.ClientName != null && i.ClientName.Contains(request.ClientName));
+        }
 
-        // if (!string.IsNullOrWhiteSpace(request.InterventionDate))
-        // {
-        //     try
-        //     {
-        //         var dateString = request.InterventionDate.Trim('"');
-        //         var parsedDate = DateTime.Parse(dateString);
-        //         var startOfDay = DateTime.SpecifyKind(parsedDate.Date, DateTimeKind.Utc);
+        if (!string.IsNullOrWhiteSpace(request.InterventionDate))
+        {
+            try
+            {
+                var dateString = request.InterventionDate.Trim('"');
+                var parsedDate = DateTime.Parse(dateString);
+                var startOfDay = DateTime.SpecifyKind(parsedDate.Date, DateTimeKind.Utc);
                 
-        //         query = query.Where(i => i.InterventionDate.Date == startOfDay.Date);
-        //     }
-        //     catch
-        //     {
-        //         // If date parsing fails, just skip the date filter
-        //     }
-        // }
+                queryInterventions = queryInterventions.Where(i => i.InterventionDate == startOfDay.Date);
+            }
+            catch
+            {
+                // If date parsing fails, just skip the date filter
+            }
+        }
 
 
-        // var totalCount = await query.CountAsync(cancellationToken);
+        var totalCount = await queryInterventions.CountAsync(cancellationToken);
 
 
-        // var items = await query
-        //     .Skip((request.PageNumber - 1) * request.PageSize)
-        //     .Take(request.PageSize)
-        //     .Select(i => new InterventionDto
-        //     {
-        //         Id = i.Id,
-        //         WorkPointAddress = i.WorkPointAddress ?? string.Empty,
-        //         ContactPerson = i.ContactPerson ?? string.Empty,
-        //         InterventionDate = i.InterventionDate.ToString(),
-        //         Status = i.Status ?? string.Empty,
-        //         TimeInterval = i.TimeInterval ?? string.Empty,
-        //         TechnicianName = i.Technician != null 
-        //             ? $"{i.Technician.FirstName} {i.Technician.LastName}"
-        //             : string.Empty,
-        //         ClientName = i.Client != null ? i.Client.Name ?? string.Empty : string.Empty
-        //     })
-        //     .ToListAsync(cancellationToken);
+        var items = await queryInterventions
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(i => new InterventionDto
+            {
+                Id = i.Id,
+                InterventionDate = i.InterventionDate.ToString(),
+                UrgencyLevel = i.UrgencyLevel ?? string.Empty,
+                TechnicianName = i.TechnicianName,
+                ClientName = i.ClientName
+            })
+            .ToListAsync(cancellationToken);
 
         return new PagedResponse<InterventionDto>
         {
-            // Items = items,
-            // TotalCount = totalCount,
-            // PageNumber = request.PageNumber,
-            // PageSize = request.PageSize
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize
         };
     }
 }
