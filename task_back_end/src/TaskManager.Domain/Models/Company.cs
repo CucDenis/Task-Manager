@@ -11,11 +11,11 @@ public partial class Company
 
     public string? Cui { get; set; }
 
-    public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
+    public virtual ICollection<Client> Clients { get; } = new List<Client>();
 
-    public virtual ICollection<Contract> ContractClientCompanies { get; set; } = new List<Contract>();
+    public virtual ICollection<Contract> ContractClientCompanies { get; } = new List<Contract>();
 
-    public virtual ICollection<Contract> ContractTechnicianCompanies { get; set; } = new List<Contract>();
+    public virtual ICollection<Contract> ContractTechnicianCompanies { get; } = new List<Contract>();
 
-    public virtual ICollection<Technician> Technicians { get; set; } = new List<Technician>();
+    public virtual ICollection<Technician> Technicians { get; } = new List<Technician>();
 }

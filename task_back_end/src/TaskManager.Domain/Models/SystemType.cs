@@ -7,5 +7,5 @@ public partial class SystemType
 
     public string? Name { get; set; }
 
-    public virtual ICollection<SubSystemType> SubSystemTypes { get; set; } = new List<SubSystemType>();
+    public virtual ICollection<SubSystemType> SubSystemTypes { get; } = new List<SubSystemType>();
 }

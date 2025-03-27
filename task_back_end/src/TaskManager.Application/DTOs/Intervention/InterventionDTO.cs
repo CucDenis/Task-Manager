@@ -1,3 +1,5 @@
+
+namespace TaskManager.Application.DTOs.Intervention;
 public class InterventionDto
 {
     public int Id { get; set; }

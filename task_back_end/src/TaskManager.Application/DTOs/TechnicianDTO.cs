@@ -1,6 +1,6 @@
 namespace TaskManager.Application.DTOs;
 
-public class TechnicianDTO
+public class TechnicianDto
 {
     public int Id { get; set; }
     public string? FirstName { get; set; }

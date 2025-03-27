@@ -25,7 +25,7 @@ public partial class Intervention
 
     public virtual Client? Client { get; set; }
 
-    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+    public virtual ICollection<Invoice> Invoices { get; } = new List<Invoice>();
 
     public virtual UrgencyLevel? Level { get; set; }
 

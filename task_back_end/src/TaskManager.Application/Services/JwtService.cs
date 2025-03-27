@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -7,25 +8,20 @@ using TaskManager.Domain.Models;
 
 namespace TaskManager.Application.Services;
 
-public class JwtService
+public class JwtService(IConfiguration configuration)
 {
-    private readonly IConfiguration _configuration;
-
-    public JwtService(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    private readonly IConfiguration _configuration = configuration;
 
     public string GenerateToken<T>(T user) where T : User
     {
-        var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? 
+        byte[] key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? 
             throw new InvalidOperationException("JWT Key not found"));
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture)),
                 new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new Claim("UserType", typeof(T).Name)
@@ -40,7 +36,7 @@ public class JwtService
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
+        SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
         return tokenHandler.WriteToken(token);
     }

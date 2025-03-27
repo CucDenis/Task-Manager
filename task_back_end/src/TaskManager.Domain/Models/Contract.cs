@@ -13,7 +13,7 @@ public partial class Contract
 
     public virtual Company? ClientCompany { get; set; }
 
-    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+    public virtual ICollection<Invoice> Invoices { get; } = new List<Invoice>();
 
     public virtual Company? TechnicianCompany { get; set; }
 }

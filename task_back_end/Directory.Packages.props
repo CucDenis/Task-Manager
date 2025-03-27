@@ -1,0 +1,20 @@
+﻿<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
+    <PackageVersion Include="SonarAnalyzer.Csharp" Version="10.7.0.110445" />
+    <PackageVersion Include="Dapper" Version="2.1.28" />
+    <PackageVersion Include="MediatR" Version="12.4.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.2" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0"/>
+  </ItemGroup>
+</Project>

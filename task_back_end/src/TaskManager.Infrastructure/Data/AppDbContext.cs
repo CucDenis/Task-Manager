@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Models;
 
-namespace TaskManager.Infrastructure.Models;
+namespace TaskManager.Infrastructure.Data;
 
 public partial class AppDbContext : DbContext
 {
@@ -319,8 +319,5 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("users_role_id_fkey");
         });
 
-        OnModelCreatingPartial(modelBuilder);
     }
-
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

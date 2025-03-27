@@ -1,30 +1,11 @@
-// using MediatR;
-// using TaskManager.Domain.Interfaces;
-// using Microsoft.AspNetCore.Authorization;
-// using TaskManager.Api.Controllers;
+using MediatR;
+using TaskManager.Application.DTOs.Intervention;
+using TaskManager.Domain.Interfaces;
 
-// namespace TaskManager.Application.Features.Interventions.Commands.CreateIntervention;
+namespace TaskManager.Application.Features.Interventions.Commands.CreateIntervention;
 
-// [Authorize]
-// public class CreateInterventionCommandHandler : BaseApiController, IRequestHandler<CreateInterventionCommand, InterventionDto>
-// {
-//     private readonly IUnitOfWork _unitOfWork;
+public class CreateInterventionCommandHandler() : IRequestHandler<CreateInterventionCommand, InterventionDto>
+{
 
-//     public CreateInterventionCommandHandler(IUnitOfWork unitOfWork)
-//     {
-//         _unitOfWork = unitOfWork;
-//     }
-
-//     public Task<InterventionDto> Handle(CreateInterventionCommand request, CancellationToken cancellationToken)
-//     {
-//         var userId = GetCurrentUserId() ?? 
-//             throw new UnauthorizedAccessException("User not authenticated");
-
-//         var newIntervention = new InterventionDto {
-//             WorkPointAddress = request.WorkPointAddress,
-//             ClientId = userId
-//         };
-
-//         // ... continue with intervention creation
-//     }
-// }
+    public Task<InterventionDto> Handle(CreateInterventionCommand request, CancellationToken cancellationToken) => Task.FromResult(new InterventionDto());
+}

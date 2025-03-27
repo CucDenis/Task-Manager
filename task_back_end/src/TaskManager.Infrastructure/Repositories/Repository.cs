@@ -1,19 +1,20 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastructure.Data;
-using TaskManager.Infrastructure.Models;
 
 namespace TaskManager.Infrastructure.Repositories;
 
 public class Repository<T> : IRepository<T> where T : class
 {
-    protected readonly AppDbContext _context;
+    protected AppDbContext Context { get; }
     private readonly DbSet<T> _dbSet;
 
     public Repository(AppDbContext context)
     {
-        _context = context;
+        Context = context ?? throw new ArgumentNullException(nameof(context));
+
         _dbSet = context.Set<T>();
+
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()

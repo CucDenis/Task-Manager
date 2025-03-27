@@ -21,9 +21,9 @@ public partial class User
 
     public string? Cnp { get; set; }
 
-    public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
+    public virtual ICollection<Client> Clients { get; } = new List<Client>();
 
     public virtual Role? Role { get; set; }
 
-    public virtual ICollection<Technician> Technicians { get; set; } = new List<Technician>();
+    public virtual ICollection<Technician> Technicians { get; } = new List<Technician>();
 }

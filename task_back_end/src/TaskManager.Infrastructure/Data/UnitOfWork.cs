@@ -1,6 +1,4 @@
 using TaskManager.Domain.Interfaces;
-using TaskManager.Domain.Models;
-using TaskManager.Infrastructure.Models;
 using TaskManager.Infrastructure.Repositories;
 
 namespace TaskManager.Infrastructure.Data;
@@ -8,7 +6,7 @@ namespace TaskManager.Infrastructure.Data;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _context;
-    private Dictionary<Type, object> _repositories;
+    private readonly Dictionary<Type, object> _repositories;
     private bool _disposed;
 
     public UnitOfWork(AppDbContext context)

@@ -7,5 +7,5 @@ public partial class Availability
 
     public string? Name { get; set; }
 
-    public virtual ICollection<Technician> Technicians { get; set; } = new List<Technician>();
+    public virtual ICollection<Technician> Technicians { get; } = new List<Technician>();
 }

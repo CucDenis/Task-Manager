@@ -9,7 +9,7 @@ public partial class SubSystemType
 
     public int? SystemTypeId { get; set; }
 
-    public virtual ICollection<SubSystemTypeExpertise> SubSystemTypeExpertises { get; set; } = new List<SubSystemTypeExpertise>();
+    public virtual ICollection<SubSystemTypeExpertise> SubSystemTypeExpertises { get; } = new List<SubSystemTypeExpertise>();
 
     public virtual SystemType? SystemType { get; set; }
 }

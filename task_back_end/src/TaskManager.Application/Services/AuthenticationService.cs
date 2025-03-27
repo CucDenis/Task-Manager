@@ -17,19 +17,21 @@ public class AuthenticationService
     public async Task<(User? user, string? token)> AuthenticateAsync(string email, string password, string userType)
     {
         User? user = null;
-        
-        switch (userType.ToLower())
+
+        switch (userType.ToUpperInvariant())
         {
-            case "client":
-                var clients = await _unitOfWork.Repository<User>().GetAllAsync();
-                user = clients.FirstOrDefault(c => 
+            case "CLIENT":
+                IEnumerable<User> clients = await _unitOfWork.Repository<User>().GetAllAsync();
+                user = clients.FirstOrDefault(c =>
                     c.Email?.Equals(email, StringComparison.OrdinalIgnoreCase) == true);
                 break;
 
-            case "technician":
-                var technicians = await _unitOfWork.Repository<User>().GetAllAsync();
-                user = technicians.FirstOrDefault(t => 
+            case "TECHNICIAN":
+                IEnumerable<User> technicians = await _unitOfWork.Repository<User>().GetAllAsync();
+                user = technicians.FirstOrDefault(t =>
                     t.Email?.Equals(email, StringComparison.OrdinalIgnoreCase) == true);
+                break;
+            default:
                 break;
         }
 
@@ -38,7 +40,7 @@ public class AuthenticationService
             return (null, null);
         }
 
-        var token = _jwtService.GenerateToken(user!);
+        string token = _jwtService.GenerateToken(user!);
         
         return (user, token);
     }

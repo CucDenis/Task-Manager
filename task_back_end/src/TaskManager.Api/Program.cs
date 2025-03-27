@@ -1,16 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastructure.Data;
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using TaskManager.Application.Services;
-using TaskManager.Application.Features.Interventions.Queries.GetInterventions;
-using TaskManager.Infrastructure.Models;
-using TaskManager.Application.Validators;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -66,7 +61,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Add FluentValidation
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
+builder.Services.AddValidatorsFromAssembly(ApplicationAssemblyReference.Assembly);
 // builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()
 //     .Where(assembly => assembly.FullName != null && 
 //         (assembly.FullName.StartsWith("TaskManager.Application") || 

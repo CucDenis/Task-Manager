@@ -1,8 +1,7 @@
-using System;
 
-namespace TaskManager.Application.DTOs;
+namespace TaskManager.Application.DTOs.Offer;
 
-public class OfferDTO
+public class OfferDto
 {
     public int Id { get; set; }
     public string? Name { get; set; }

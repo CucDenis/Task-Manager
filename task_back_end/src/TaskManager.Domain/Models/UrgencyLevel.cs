@@ -7,5 +7,5 @@ public partial class UrgencyLevel
 
     public string? Name { get; set; }
 
-    public virtual ICollection<Intervention> Interventions { get; set; } = new List<Intervention>();
+    public virtual ICollection<Intervention> Interventions { get; } = new List<Intervention>();
 }

@@ -1,10 +1,12 @@
+using System.Globalization;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Application.Common.Models;
+using TaskManager.Application.DTOs.Intervention;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Domain.Models;
 
-namespace TaskManager.Application.Features.Interventions.Queries.GetInterventions;
+namespace TaskManager.Application.Features.Interventions.Queries;
 
 public class GetInterventionsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetInterventionsQuery, PagedResponse<InterventionDto>>
 {
@@ -50,8 +52,8 @@ public class GetInterventionsQueryHandler(IUnitOfWork unitOfWork) : IRequestHand
         {
             try
             {
-                var dateString = request.InterventionDate.Trim('"');
-                var parsedDate = DateTime.Parse(dateString);
+                string dateString = request.InterventionDate.Trim('"');
+                var parsedDate = DateTime.Parse(dateString, new CultureInfo("en-GB"));
                 var startOfDay = DateTime.SpecifyKind(parsedDate.Date, DateTimeKind.Utc);
                 
                 queryInterventions = queryInterventions.Where(i => i.InterventionDate == startOfDay.Date);
@@ -63,10 +65,10 @@ public class GetInterventionsQueryHandler(IUnitOfWork unitOfWork) : IRequestHand
         }
 
 
-        var totalCount = await queryInterventions.CountAsync(cancellationToken);
+        int totalCount = await queryInterventions.CountAsync(cancellationToken);
 
 
-        var items = await queryInterventions
+        List<InterventionDto> items = await queryInterventions
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(i => new InterventionDto
