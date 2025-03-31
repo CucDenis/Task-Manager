@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.Common.Models;
 using TaskManager.Application.DTOs.Intervention;
-using TaskManager.Application.Features.Interventions.Commands;
-using TaskManager.Application.Features.Interventions.Queries;
+using TaskManager.Application.Features.Interventions.Commands.CreateIntervention;
+using TaskManager.Application.Features.Interventions.Queries.GetInterventions;
 
 namespace TaskManager.Api.Controllers;
 

@@ -1,22 +1,22 @@
 using System.Globalization;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Application.Abstractions.Repositories;
 using TaskManager.Application.Common.Models;
 using TaskManager.Application.DTOs.Intervention;
-using TaskManager.Domain.Interfaces;
-using TaskManager.Domain.Models;
+using TaskManager.Application.Features.Interventions.Queries.GetInterventions;
 
 namespace TaskManager.Application.Features.Interventions.Queries;
 
-public class GetInterventionsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetInterventionsQuery, PagedResponse<InterventionDto>>
+public class GetInterventionsQueryHandler(IInterventionsRepository interventionsRepository) : IRequestHandler<GetInterventionsQuery, PagedResponse<InterventionDto>>
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IInterventionsRepository _interventionsRepository = interventionsRepository;
 
     public async Task<PagedResponse<InterventionDto>> Handle(
         GetInterventionsQuery request, CancellationToken cancellationToken)
     {
     
-        var queryInterventions = _unitOfWork.Repository<Intervention>()
+        var queryInterventions = _interventionsRepository
             .GetQueryable()
             .Include(i => i.Client)
                 .ThenInclude(c => c!.User)

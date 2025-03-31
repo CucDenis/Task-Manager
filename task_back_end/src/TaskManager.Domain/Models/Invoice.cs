@@ -3,7 +3,7 @@ namespace TaskManager.Domain.Models;
 
 public partial class Invoice
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public int? ContractId { get; set; }
 

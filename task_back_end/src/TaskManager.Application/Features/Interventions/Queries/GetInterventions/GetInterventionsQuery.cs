@@ -2,7 +2,7 @@ using MediatR;
 using TaskManager.Application.Common.Models;
 using TaskManager.Application.DTOs.Intervention;
 
-namespace TaskManager.Application.Features.Interventions.Queries;
+namespace TaskManager.Application.Features.Interventions.Queries.GetInterventions;
 
 
 public class GetInterventionsQuery : IRequest<PagedResponse<InterventionDto>>

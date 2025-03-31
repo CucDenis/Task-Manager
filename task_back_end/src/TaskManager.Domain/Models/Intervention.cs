@@ -3,19 +3,19 @@ namespace TaskManager.Domain.Models;
 
 public partial class Intervention
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    public int ClientId { get; set; }
+    public Guid ClientId { get; set; }
 
-    public int TechnicianId { get; set; }
+    public Guid TechnicianId { get; set; }
 
     public string? Name { get; set; }
 
-    public int? LevelId { get; set; }
+    public Guid? LevelId { get; set; }
 
-    public string? Description { get; set; }
+    public required string Description { get; set; }
 
-    public string? Location { get; set; }
+    public required Location Location { get; set; }
 
     public byte[]? ClientSignature { get; set; }
 

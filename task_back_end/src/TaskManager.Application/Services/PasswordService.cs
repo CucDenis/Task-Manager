@@ -21,17 +21,22 @@ public static class PasswordService
             numBytesRequested: 256 / 8));
 
         return $"{Convert.ToBase64String(salt)}.{hashed}";
+
     }
 
     public static bool VerifyPassword(string password, string storedHash)
     {
         try
         {
-            var parts = storedHash.Split('.');
-            if (parts.Length != 2) return false;
+            string[] parts = storedHash.Split('.');
 
-            var salt = Convert.FromBase64String(parts[0]);
-            var hash = parts[1];
+            if (parts.Length != 2)
+            {
+                return false;
+            }
+
+            byte[] salt = Convert.FromBase64String(parts[0]);
+            string hash = parts[1];
 
             string newHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password,
@@ -41,10 +46,12 @@ public static class PasswordService
                 numBytesRequested: 256 / 8));
 
             return hash == newHash;
+
         }
         catch
         {
             return false;
+
         }
     }
 }
