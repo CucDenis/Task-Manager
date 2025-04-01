@@ -6,37 +6,32 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using FluentValidation;
-using TaskManager.Domain.Interfaces;
 using TaskManager.Domain.Models;
 using TaskManager.Application.DTOs.Auth;
+using TaskManager.Application.Abstractions.Data;
+using FluentValidation.Results;
+using TaskManager.Application.Abstractions.Repositories;
+using System.Threading;
+using TaskManager.Infrastructure.Services;
+using TaskManager.Application.Abstractions.Services;
 
 namespace TaskManager.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+internal class AuthController(IAuthService authService, IConfiguration configuration,
+    IUserRepository userRepository, JwtService jwtService, IValidator<RegisterDto> validator) : ControllerBase
 {
-    private readonly AuthenticationService _authService;
-    private readonly IConfiguration _configuration;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly JwtService _jwtService;
-    private readonly IValidator<RegisterDto> _validator;
+    private readonly IAuthService _authService = authService;
+    private readonly IConfiguration _configuration = configuration;
+    private readonly IUserRepository _userRepository = userRepository;
+    private readonly JwtService _jwtService = jwtService;
+    private readonly IValidator<RegisterDto> _validator = validator;
 
-
-    public AuthController(AuthenticationService authService, IConfiguration configuration, 
-        IUnitOfWork unitOfWork, JwtService jwtService, IValidator<RegisterDto> validator)
-    {
-        _authService = authService;
-        _configuration = configuration;
-        _unitOfWork = unitOfWork;
-        _jwtService = jwtService;
-        _validator = validator;
-    }
-
-     [HttpPost("register")]
+    [HttpPost("register")]
     public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto registerDto)
     {
-        var validationResult = _validator.Validate(registerDto);
+        ValidationResult validationResult = await _validator.ValidateAsync(registerDto);
 
         if (!validationResult.IsValid)
         {
@@ -55,34 +50,15 @@ public class AuthController : ControllerBase
 
         try
         {
-            var users = await _unitOfWork.Repository<User>().GetAllAsync();
 
-            if (users.Any(c => c.Email?.Equals(registerDto.Email, StringComparison.OrdinalIgnoreCase) == true))
+            if (await _userRepository.CheckEmailExists(registerDto.Email))
             {
                 return BadRequest(new { message = "Email already exists" });
             }
 
-            var newUser = new User
-            {
-                FirstName = registerDto.FirstName,
-                LastName = registerDto.LastName,
-                Email = registerDto.Email.ToLower(),
-                Password = PasswordService.HashPassword(registerDto.Password),
-                Cnp = registerDto.Cnp
+            User? newUser = await _authService.RegisterUser(registerDto) ?? throw new Exception(" User not registered. Something went wrong.");
 
-            };
-
-            await _unitOfWork.Repository<User>().AddAsync(newUser);
-
-            var result = await _unitOfWork.SaveChangesAsync();
-
-            if (result <= 0)
-            {
-                throw new Exception("Failed to save client");
-
-            }
-
-            var token = _jwtService.GenerateToken(newUser);
+            string token = _jwtService.GenerateToken(newUser);
             
             // Set HttpOnly cookie
             Response.Cookies.Append("auth_token", token, new CookieOptions
@@ -97,7 +73,7 @@ public class AuthController : ControllerBase
             var response = new AuthResponseDto
             {
                 Email = newUser.Email ?? string.Empty,
-                FullName = $"{newUser.FirstName} {newUser.LastName}" ?? string.Empty
+                FullName = $"{newUser.FirstName} {newUser.LastName}"
                 
             };
 
@@ -115,21 +91,19 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto loginDto)
+    public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto loginDto)
     {
         try
         {
-            var (user, token) = await _authService.AuthenticateAsync(
-                loginDto.Email, 
-                loginDto.Password, 
-                loginDto.UserType
-            );
+            User? user = await _authService.AuthenticateUser(loginDto);
 
-            if (user == null || token == null)
+            if (user == null)
             {
                 return Unauthorized(new { message = "Invalid credentials" });
 
             }
+
+            string token = _jwtService.GenerateToken(user);
 
             // Set HttpOnly cookie
             Response.Cookies.Append("auth_token", token, new CookieOptions
@@ -170,72 +144,72 @@ public class AuthController : ControllerBase
 
     }
 
-    [HttpGet("check-auth")]
-    public ActionResult<AuthStatusResponse> CheckAuth()
-    {
-        try
-        {
-            var token = Request.Cookies["auth_token"];
-            if (string.IsNullOrEmpty(token))
-            {
-                return Ok(new AuthStatusResponse 
-                { 
-                    IsAuthenticated = false 
+    //[HttpGet("check-auth")]
+    //public ActionResult<AuthStatusResponse> CheckAuth()
+    //{
+    //    try
+    //    {
+    //        string? token = Request.Cookies["auth_token"];
+    //        if (string.IsNullOrEmpty(token))
+    //        {
+    //            return Ok(new AuthStatusResponse 
+    //            { 
+    //                IsAuthenticated = false 
 
-                });
+    //            });
 
-            }
+    //        }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not found"));
+    //        var tokenHandler = new JwtSecurityTokenHandler();
+    //        byte[] key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not found"));
             
-            try
-            {
-                var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = true,
-                    ValidIssuer = _configuration["Jwt:Issuer"],
-                    ValidateAudience = true,
-                    ValidAudience = _configuration["Jwt:Audience"],
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
+    //        try
+    //        {
+    //            ClaimsPrincipal principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+    //            {
+    //                ValidateIssuerSigningKey = true,
+    //                IssuerSigningKey = new SymmetricSecurityKey(key),
+    //                ValidateIssuer = true,
+    //                ValidIssuer = _configuration["Jwt:Issuer"],
+    //                ValidateAudience = true,
+    //                ValidAudience = _configuration["Jwt:Audience"],
+    //                ValidateLifetime = true,
+    //                ClockSkew = TimeSpan.Zero
 
-                }, out SecurityToken validatedToken);
+    //            }, out SecurityToken validatedToken);
 
-                var email = principal.FindFirst(ClaimTypes.Email)?.Value;
-                var userType = principal.FindFirst("UserType")?.Value;
+    //            string? email = principal.FindFirst(ClaimTypes.Email)?.Value;
+    //            string? userType = principal.FindFirst("UserType")?.Value;
 
-                return Ok(new AuthStatusResponse 
-                { 
-                    IsAuthenticated = true,
+    //            return Ok(new AuthStatusResponse 
+    //            { 
+    //                IsAuthenticated = true,
 
-                });
+    //            });
 
-            }
-            catch
-            {
+    //        }
+    //        catch
+    //        {
 
-                Response.Cookies.Delete("auth_token");
-                return Ok(new AuthStatusResponse 
-                { 
-                    IsAuthenticated = false 
+    //            Response.Cookies.Delete("auth_token");
+    //            return Ok(new AuthStatusResponse 
+    //            { 
+    //                IsAuthenticated = false 
 
-                });
+    //            });
 
-            }
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return StatusCode(500, new { message = ex.Message });
             
-        }
-    }
+    //    }
+    //}
 }
 
-public class AuthStatusResponse
-{
-    public bool IsAuthenticated { get; set; }
+//public class AuthStatusResponse
+//{
+//    public bool IsAuthenticated { get; set; }
     
-}
+//}

@@ -8,9 +8,9 @@ using TaskManager.Application.Features.Interventions.Queries.GetInterventions;
 
 namespace TaskManager.Application.Features.Interventions.Queries;
 
-public class GetInterventionsQueryHandler(IInterventionsRepository interventionsRepository) : IRequestHandler<GetInterventionsQuery, PagedResponse<InterventionDto>>
+public class GetInterventionsQueryHandler(IInterventionRepository interventionsRepository) : IRequestHandler<GetInterventionsQuery, PagedResponse<InterventionDto>>
 {
-    private readonly IInterventionsRepository _interventionsRepository = interventionsRepository;
+    private readonly IInterventionRepository _interventionsRepository = interventionsRepository;
 
     public async Task<PagedResponse<InterventionDto>> Handle(
         GetInterventionsQuery request, CancellationToken cancellationToken)

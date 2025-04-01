@@ -8,5 +8,5 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
 
     public async Task<int> SaveChangesAsync()
         => await _context.SaveChangesAsync();
-    public Task<int> SaveChangesAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken) => await _context.SaveChangesAsync(cancellationToken);
 }

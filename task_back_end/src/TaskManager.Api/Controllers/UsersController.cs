@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using TaskManager.Application.Services;
 using TaskManager.Domain.Interfaces;
 using FluentValidation;
 using TaskManager.Application.DTOs.Auth;
+using TaskManager.Infrastructure.Services;
 
 namespace TaskManager.Api.Controllers;
 

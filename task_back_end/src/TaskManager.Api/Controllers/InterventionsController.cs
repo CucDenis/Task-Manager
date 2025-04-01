@@ -15,6 +15,7 @@ internal class InterventionsController(IMediator mediator) : ControllerBase
 {
     private readonly IMediator _mediator = mediator;
 
+    [Authorize(Roles = "Admin, Client, Technician")]
     [HttpGet]
     public async Task<ActionResult<PagedResponse<InterventionDto>>> GetAll([FromQuery] GetInterventionsQuery query)
     {
@@ -35,6 +36,7 @@ internal class InterventionsController(IMediator mediator) : ControllerBase
         
     }
 
+    [Authorize(Roles = "Client, Technician")]
     [HttpPost("/create")]
     public async Task<ActionResult<InterventionDto>> Create([FromBody] CreateInterventionCommand command){
 

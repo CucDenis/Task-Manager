@@ -2,6 +2,6 @@
 
 namespace TaskManager.Application.Abstractions.Repositories;
 
-public interface IInterventionsRepository : IRepository<Intervention>
+public interface IInterventionRepository : IRepository<Intervention>
 {
 }

@@ -6,11 +6,11 @@ using TaskManager.Domain.Models;
 
 namespace TaskManager.Application.Features.Interventions.Commands.CreateIntervention;
 
-public class CreateInterventionCommandHandler(IUnitOfWork unitOfWork, IInterventionsRepository interventionsRepository) : IRequestHandler<CreateInterventionCommand, InterventionDto>
+public class CreateInterventionCommandHandler(IUnitOfWork unitOfWork, IInterventionRepository interventionsRepository) : IRequestHandler<CreateInterventionCommand, InterventionDto>
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    private readonly IInterventionsRepository _interventionsRepository = interventionsRepository;
+    private readonly IInterventionRepository _interventionsRepository = interventionsRepository;
 
     public async Task<InterventionDto> Handle(CreateInterventionCommand request, CancellationToken cancellationToken)
     {
