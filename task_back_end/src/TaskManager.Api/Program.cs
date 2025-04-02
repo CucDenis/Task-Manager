@@ -63,11 +63,7 @@ builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("ClientOrTechnician", policy => policy.RequireRole("Client", "Technician"));
 
 // Add FluentValidation
-builder.Services.AddValidatorsFromAssembly(ApplicationAssemblyReference.Assembly);
-// builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()
-//     .Where(assembly => assembly.FullName != null && 
-//         (assembly.FullName.StartsWith("TaskManager.Application") || 
-//          assembly.FullName.StartsWith("TaskManager.Api"))));
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
 
 // Add MediatR
 builder.Services.AddMediatR(configuration => 
