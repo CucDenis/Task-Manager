@@ -1,18 +1,21 @@
 using Microsoft.EntityFrameworkCore;
-using TaskManager.Domain.Interfaces;
+using TaskManager.Application.Abstractions.Repositories;
 using TaskManager.Infrastructure.Data;
 
 namespace TaskManager.Infrastructure.Repositories;
 
 public class Repository<T> : IRepository<T> where T : class
 {
-    protected readonly AppDbContext _context;
+    public AppDbContext Context { get; }
+
     private readonly DbSet<T> _dbSet;
 
     public Repository(AppDbContext context)
     {
-        _context = context;
-        _dbSet = context.Set<T>();
+        Context = context;
+
+        _dbSet = Context.Set<T>();
+
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()
@@ -24,19 +27,25 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task<T> AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
+
         return entity;
+
     }
 
     public Task UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
+
         return Task.CompletedTask;
+
     }
 
     public Task DeleteAsync(T entity)
     {
         _dbSet.Remove(entity);
+
         return Task.CompletedTask;
+
     }
 
     public IQueryable<T> GetQueryable()

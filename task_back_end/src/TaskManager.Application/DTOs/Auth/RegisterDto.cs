@@ -1,18 +1,13 @@
-namespace TaskManager.Api.DTOs.Auth;
+namespace TaskManager.Application.DTOs.Auth;
 
 public class RegisterDto
 {
-    public string Name { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string CuiCnp { get; set; } = string.Empty;
-    public ICollection<ClientContactDto> Contacts { get; set; } = [];
+    public required string FirstName { get; set; }
+    public required string LastName { get; set; }
+    public required string Email { get; set; }
+    public required string Cnp { get; set; }
+    public required string Password { get; set; }
+    public required Guid RoleId { get; set; }
+
 }
 
-public class ClientContactDto
-{
-    public string Name { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Phone { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
-}

@@ -1,22 +1,21 @@
 ﻿
-
 namespace TaskManager.Domain.Models;
 
 public partial class Invoice
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    public string? IssuingCompany { get; set; }
+    public int? ContractId { get; set; }
 
-    public string? ClientCompany { get; set; }
+    public int? InterventionId { get; set; }
 
-    public decimal? Subtotal { get; set; }
+    public string? Description { get; set; }
 
-    public decimal? Total { get; set; }
+    public DateTime? EmmitingDate { get; set; }
 
-    public DateOnly? IssueDate { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public DateOnly? PaymentDue { get; set; }
+    public virtual Contract? Contract { get; set; }
 
-    public virtual ICollection<InvoiceItem> InvoiceItems { get; set; } = [];
+    public virtual Intervention? Intervention { get; set; }
 }
